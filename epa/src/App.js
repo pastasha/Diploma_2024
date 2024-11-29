@@ -18,7 +18,7 @@ render() {
         <h1>Environmental Performance Analyzer</h1>
       </header>
 
-      <nav class="sticky navbar">
+      <nav class="sticky navbar fixed-top">
         <div class="brand  display__logo">
           <a href="#top" class="nav__link">
             <div class="logo-icon-menu logo"><Logo/></div>
