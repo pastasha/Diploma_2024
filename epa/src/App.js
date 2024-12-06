@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { Route, NavLink, Routes, HashRouter } from "react-router-dom";
-
 import Home from "./controllers/Home";
 import About from "./controllers/About";
-import Contact from "./controllers/Contact";
+import Contact  from "./controllers/Contact";
+import { Session } from "./controllers/Session";
 import { ReactComponent as Logo} from './icons/epa-logo.svg';  // eslint-disable-next-line 
 import './styles/App.css';
 import './styles/base.css';
@@ -12,6 +12,7 @@ class App extends Component {
 render() {
   return (
     <HashRouter>
+      <Session />
       <div className="App">
       <link rel="{Logo}"/>
       <header class="header">
@@ -29,29 +30,29 @@ render() {
         <label for="nav" class="nav__open"><i></i><i></i><i></i></label>
         <div class="nav">
           <ul class="nav__items">
-            <li class="nav__item"><a href="#home" class="nav__link">Home</a></li>
-            <li class="nav__item"><a href="#about" class="nav__link">About</a></li>
-            <li class="nav__item"><a href="#contact" class="nav__link">Contact</a></li>
+            <li class="nav__item"><a href="#upload" class="nav__link">Upload</a></li>
+            <li class="nav__item"><a href="#analyze" class="nav__link">Analyze</a></li>
+            <li class="nav__item"><a href="#predict" class="nav__link">Predict</a></li>
           </ul>
         </div>
       </nav>
 
       <main>
         <section>
-          <div class="section-wrapper" id="home">
-            <h1>Home</h1>
+          <div class="section-wrapper" id="upload">
+            <h1>Upload data</h1>
             <Home />
           </div>
         </section>
         <section>
-          <div class="section-wrapper" id="about">
-            <h1>About</h1>
+          <div class="section-wrapper hidden" id="analyze">
+            <h1>Analyze</h1>
             <About />
           </div>
         </section>
         <section>
-          <div class="section-wrapper" id="contact">
-            <h1>Contact</h1>
+          <div class="section-wrapper hidden" id="predict">
+            <h1>Predict</h1>
             <Contact />
           </div>
         </section>

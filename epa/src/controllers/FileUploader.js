@@ -1,7 +1,6 @@
-import { useRef } from "react";
-import React, { useState } from "react";
-import "../styles/fileUploader.css";
+import React, { useState, useRef } from "react";
 import Papa from "papaparse";
+import "../styles/fileUploader.css";
 
 export function FileUploader() {
 
@@ -12,6 +11,12 @@ export function FileUploader() {
     // when the Button component is clicked
     const handleClick = (event) => {
         hiddenFileInput.current.click();
+    };
+
+    // when the Button component is clicked
+    const handleClickAnalyse = (event) => {
+        var analyze = document.getElementById("analyze");
+        analyze.classList.remove("hidden");
     };
 
     const [fileName, setFileName] = useState("");
@@ -31,7 +36,7 @@ export function FileUploader() {
             const data = new FormData();
             data.append('file_from_react', fileUploaded);
         
-            let response = await fetch('/data_analysis',
+            let response = await fetch('/upload-data',
                 {
                 method: 'post',
                 body: data,
@@ -62,6 +67,9 @@ export function FileUploader() {
                         setTableRows(rowsArray[0]);
                         // Filtered Values
                         setValues(valuesArray);
+
+                        var analysisButton = document.querySelector(".analysis-button");
+                        analysisButton.classList.remove("hidden");
                     }
                 });
             }
@@ -111,6 +119,14 @@ export function FileUploader() {
                         })}
                     </tbody>
                 </table>
+            </div>
+
+            {/* Analyse button */}
+            <div class="analysis-button hidden">
+                <p>Your file was successfuly uploaded. Now you can procees with analysis.</p>
+                <button className="button-upload" onClick={handleClickAnalyse}>
+                    Start EDA
+                </button>
             </div>
         </div>
     );
