@@ -7,6 +7,7 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask import Flask, request, jsonify, make_response
 from utilities import *
+from eda import ExploratoryDataAnalysis
 
 # Initializing flask app
 app = Flask(__name__)
@@ -76,6 +77,17 @@ def upload_file():
 
     return jsonify(d)
 
+@app.route('/start-eda', methods=['POST'])
+def start_eda():
+    user_id = request.cookies.get('user_id')
+    get_statement = "SELECT * from " + USER_TABLE + " WHERE user_id='" + user_id + "'"
+    col_names = get_column_names(USER_TABLE, cursor)
+    user_df = pd.DataFrame(columns=col_names)
+    user_df = get_data_from_db(get_statement, connection, cursor, user_df, col_names)[0][0]
+    customer_folder = user_df['files_path']
+    eda = ExploratoryDataAnalysis(customer_folder)
+
+    return jsonify({'eda result': eda.correlationMatrixPlot})
 
 @app.route('/predict', methods=['POST'])
 def predict():

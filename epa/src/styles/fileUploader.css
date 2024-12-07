@@ -1,4 +1,4 @@
-.button-upload {
+.standard-upload {
     /* Reset OS-specfic / browser-specific default style (see https://ishadeed.com/article/styling-the-good-old-button/#the-default-styles) */
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -15,7 +15,7 @@
     min-width: 48px;
 }
 
-.button-upload:focus {
+.standard-upload:focus {
     outline-offset: 4px; /* make Chrome show a focus ring around the button */
 }
 
