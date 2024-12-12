@@ -68,9 +68,10 @@ def upload_file():
             filename = secure_filename("data.csv")
             os.makedirs(os.path.join(file_path), exist_ok=True)
             file.save(os.path.join(file_path, filename))
+            # Remove current user static folder 
+            remove_user_static_folder(user_id)
             print(f"✔ Uploading file {filename}")
             d['status'] = 1
-            #return redirect(url_for('download_file', name=filename))
     except Exception as e:
         print(f"Couldn't upload file {e}")
         d['status'] = 0
@@ -79,15 +80,32 @@ def upload_file():
 
 @app.route('/start-eda', methods=['POST'])
 def start_eda():
-    user_id = request.cookies.get('user_id')
-    get_statement = "SELECT * from " + USER_TABLE + " WHERE user_id='" + user_id + "'"
-    col_names = get_column_names(USER_TABLE, cursor)
-    user_df = pd.DataFrame(columns=col_names)
-    user_df = get_data_from_db(get_statement, connection, cursor, user_df, col_names)[0][0]
-    customer_folder = user_df['files_path']
-    eda = ExploratoryDataAnalysis(customer_folder)
-
-    return jsonify({'eda result': eda.correlationMatrixPlot})
+    success = False
+    edaResult = None
+    try:
+        user_id = request.cookies.get('user_id')
+        get_statement = "SELECT * from " + USER_TABLE + " WHERE user_id='" + user_id + "'"
+        col_names = get_column_names(USER_TABLE, cursor)
+        user_df = pd.DataFrame(columns=col_names)
+        user_df = get_data_from_db(get_statement, connection, cursor, user_df, col_names)[0][0]
+        customer_folder = user_df['files_path']
+        edaObject = ExploratoryDataAnalysis(user_id, customer_folder, app.root_path)
+        edaResult = {
+            "dataDistributionPlots": edaObject.dataDistributionPlots,
+            "emissionIndexPlots": edaObject.emissionIndexPlots,
+            "correlationMatrixPlot": edaObject.correlationMatrixPlot,
+            "zScorePlot": edaObject.zScorePlot,
+            "pairplotPlot": edaObject.pairplotPlot,
+            "classDistribution": edaObject.classDistribution
+        }
+        success = True
+    except Exception as e:
+        print(f"Couldn't process EDA: {e}")
+    
+    return jsonify({
+        "success": success,
+        "data": edaResult
+    })
 
 @app.route('/predict', methods=['POST'])
 def predict():

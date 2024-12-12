@@ -9,6 +9,7 @@ import os
 
 matplotlib.use("agg")
 
+STATIC_IMAGES_FOLDER = "static/images/"
 PLOTS_FOLDER = "/plots"
 DATA_DISTRIBUTION_FOLDER = PLOTS_FOLDER + "/data_distribution"
 EMISSION_INDEX_FOLDER = PLOTS_FOLDER + "/emission_index"
@@ -27,23 +28,43 @@ class ExploratoryDataAnalysis:
         data = os.path.abspath(data_path)
         dataframe = pd.read_csv(data)
         return dataframe
-    
+
     @staticmethod
-    def generateDataDistributionPlot(dataframe, value, customer_folder):
+    def saveImageToStaticFolder(user_id, root_folder, img_folder, img_name):
+        img_path = STATIC_IMAGES_FOLDER + user_id + img_folder
+        os.makedirs(os.path.join(root_folder, img_path), exist_ok=True)
+        filename = secure_filename(img_name)
+        plt.savefig(os.path.join(img_path, filename))
+        return img_path + "/" + filename
+
+    @staticmethod
+    def generateDataDistributionPlot(self, dataframe, value, user_id, root_folder):
         try:
             sns.displot(dataframe[value])
             # save result
-            img_path = customer_folder + DATA_DISTRIBUTION_FOLDER
-            os.makedirs(os.path.join(img_path), exist_ok=True)
-            filename = secure_filename(value + IMG_EXTENSION)
-            plt.savefig(os.path.join(img_path, filename))
+            img_name = value + IMG_EXTENSION
+            img_path = self.saveImageToStaticFolder(user_id, root_folder, DATA_DISTRIBUTION_FOLDER, img_name)
             return img_path
         except Exception as error:
             print("- generateDataDistributionPlot error for:" + value)
             print(f"-{type(error).__name__}: {error}")
 
     @staticmethod
-    def generateCorrelationMatrixPlot(dataframe, customer_folder):
+    def generateEmissionIndexPlot(self, dataframe, value, user_id, root_folder):
+        try:
+            plt.figure(figsize=(13, 4))
+            sns.boxplot(data=dataframe, x="AQI_Class", y=value)
+            plt.title(value + " Emissions")
+            # save result
+            img_name = value + IMG_EXTENSION
+            img_path = self.saveImageToStaticFolder(user_id, root_folder, EMISSION_INDEX_FOLDER, img_name)
+            return img_path
+        except Exception as error:
+            print("- generateEmissionIndexPlot error for:" + value)
+            print(f"-{type(error).__name__}: {error}")
+
+    @staticmethod
+    def generateCorrelationMatrixPlot(self, dataframe, user_id, root_folder):
         try:
             dataframe.drop(columns = ['Filename'], inplace=True)
             # Label encoding
@@ -53,17 +74,14 @@ class ExploratoryDataAnalysis:
             dataframe['AQI_Class'] = le.fit_transform(dataframe['AQI_Class'])
             sns.heatmap(dataframe.corr())
             # save result
-            img_path = customer_folder + PLOTS_FOLDER
-            os.makedirs(os.path.join(img_path), exist_ok=True)
-            filename = secure_filename(CORRELATION_MATRIX_FILE_NAME)
-            plt.savefig(os.path.join(img_path, filename))
+            img_path = self.saveImageToStaticFolder(user_id, root_folder, PLOTS_FOLDER, CORRELATION_MATRIX_FILE_NAME)
             return img_path
         except Exception as error:
             print("- generateCorrelationMatrixPlot error")
             print(f"-{type(error).__name__}: {error}")
 
     @staticmethod
-    def generateZScorePlot(dataframe, customer_folder):
+    def generateZScorePlot(self, dataframe, user_id, root_folder):
         try:
             dataframe['z_score'] = (dataframe['CO'] - dataframe['CO'].mean()) / dataframe['CO'].std()
             # Selection of new (by rule: Z-score > 3)
@@ -74,48 +92,26 @@ class ExploratoryDataAnalysis:
             sns.scatterplot(x=outliers.index, y=outliers['CO'], color='red', label="Outliers")
             plt.legend()
             # save result
-            img_path = customer_folder + PLOTS_FOLDER
-            os.makedirs(os.path.join(img_path), exist_ok=True)
-            filename = secure_filename(Z_SCOPE_FILE_NAME)
-            plt.savefig(os.path.join(img_path, filename))
+            img_path = self.saveImageToStaticFolder(user_id, root_folder, PLOTS_FOLDER, Z_SCOPE_FILE_NAME)
             return img_path
         except Exception as error:
             print("- generateZScorePlot error")
             print(f"-{type(error).__name__}: {error}")
 
     @staticmethod
-    def generateEmissionIndexPlot(dataframe, value, customer_folder):
-        try:
-            plt.figure(figsize=(13, 4))
-            sns.boxplot(data=dataframe, x="AQI_Class", y=value)
-            plt.title(value + " Emissions")
-            # save result
-            img_path = customer_folder + EMISSION_INDEX_FOLDER
-            os.makedirs(os.path.join(img_path), exist_ok=True)
-            filename = secure_filename(value + IMG_EXTENSION)
-            plt.savefig(os.path.join(img_path, filename))
-            return img_path
-        except Exception as error:
-            print("- generateEmissionIndexPlot error for:" + value)
-            print(f"-{type(error).__name__}: {error}")
-
-    @staticmethod
-    def generatePairplotPlot(dataframe, customer_folder):
+    def generatePairplotPlot(self, dataframe, user_id, root_folder):
         try:
             plot = sns.pairplot(dataframe, hue="AQI_Class")
             fig = plot.fig
             # save result
-            img_path = customer_folder + PLOTS_FOLDER
-            os.makedirs(os.path.join(img_path), exist_ok=True)
-            filename = secure_filename(PAIRPLOT_FILE_NAME)
-            fig.savefig(os.path.join(img_path, filename)) 
+            img_path = self.saveImageToStaticFolder(user_id, root_folder, PLOTS_FOLDER, PAIRPLOT_FILE_NAME)
             return img_path
         except Exception as error:
             print("- generatePairplotPlot error")
             print(f"-{type(error).__name__}: {error}")
 
     @staticmethod
-    def generateClassDistributionPlot(dataframe, customer_folder):
+    def generateClassDistributionPlot(self, dataframe, user_id, root_folder):
         try:
             # Define a mapping dictionary to map the old labels to the new labels
             category_mapping = {
@@ -134,32 +130,30 @@ class ExploratoryDataAnalysis:
             custom_order = ['Good', 'Moderate', 'USG', 'Unhealthy', 'Very Unhealthy', 'Severe']
             sns.countplot(data=dataframe,x='Modified_AQI_Class', order=custom_order, palette='Set2', hue='AQI_Class', legend=False)
             # save result
-            img_path = customer_folder + PLOTS_FOLDER
-            os.makedirs(os.path.join(img_path), exist_ok=True)
-            filename = secure_filename(CLASS_DISTRIBUTION_FILE_NAME)
-            plt.savefig(os.path.join(img_path, filename))
+            img_path = self.saveImageToStaticFolder(user_id, root_folder, PLOTS_FOLDER, CLASS_DISTRIBUTION_FILE_NAME)
             return img_path
         except Exception as error:
             print("- generateClassDistributionPlot error")
             print(f"-{type(error).__name__}: {error}")
 
-    def __init__(self, customer_folder):
+    def __init__(self, user_id, customer_folder, root_folder):
         dataframe = self.getCustomerData(customer_folder)
         values = ["PM2.5", "PM10", "O3", "CO", "SO2", "NO2"]
-        self.dataDistributionPlots = []
-        self.emissionIndexPlots = []
+        self.dataDistributionPlots = {}
+        self.emissionIndexPlots = {}
         for value in values:
             # generate data distribution plot
-            self.dataDistributionPlots.append(self.generateDataDistributionPlot(dataframe, value, customer_folder))
+            self.dataDistributionPlots[value] = self.generateDataDistributionPlot(self, dataframe, value, user_id, root_folder)
             # generate emission index plot
-            self.emissionIndexPlots.append(self.generateEmissionIndexPlot(dataframe, value, customer_folder))
+            self.emissionIndexPlots[value] = self.generateEmissionIndexPlot(self, dataframe, value, user_id, root_folder)
         # generate correlation matrix plot
-        self.correlationMatrixPlot = self.generateCorrelationMatrixPlot(dataframe, customer_folder)
+        self.correlationMatrixPlot = self.generateCorrelationMatrixPlot(self, dataframe, user_id, root_folder)
         # generate z-scope plot
-        self.zScorePlot = self.generateZScorePlot(dataframe, customer_folder)
+        self.zScorePlot = self.generateZScorePlot(self, dataframe, user_id, root_folder)
         # generate pairplot plot
-        self.pairplotPlot = self.generatePairplotPlot(dataframe, customer_folder)
+        self.pairplotPlot = self.generatePairplotPlot(self, dataframe, user_id, root_folder)
         # generate class distribution plot
-        self.classDistribution = self.generateClassDistributionPlot(dataframe, customer_folder)
+        self.classDistribution = self.generateClassDistributionPlot(self, dataframe, user_id, root_folder)
+        plt.close("all")
 
 
