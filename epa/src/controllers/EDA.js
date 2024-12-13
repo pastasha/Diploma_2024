@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import '../styles/eda.css';
+
 
 const serverURL = "http://127.0.0.1:5000/"
 export function EDA() {
@@ -10,9 +12,6 @@ export function EDA() {
     const [resultEDA, setResultEDA] = useState("");
     // when the Button component is clicked
     const handleClick = async (event) => {
-        var analysisButton = document.querySelector(".analysis-button");
-        analysisButton.classList.add("hidden");
-
         let data = []
         let response = await fetch('/start-eda',
             {
@@ -33,12 +32,12 @@ export function EDA() {
             }
             let dataDistributionPlots = {}
             for (const ddPlot in edaData.dataDistributionPlots) {
-                dataDistributionPlots[ddPlot] = edaData.dataDistributionPlots[ddPlot]
+                dataDistributionPlots[ddPlot] = imageComponent(edaData.dataDistributionPlots[ddPlot])
             }
             edaResult.dataDistributionPlots = dataDistributionPlots;
             let emissionIndexPlots = {}
             for (const eiPlot in edaData.emissionIndexPlots) {
-                emissionIndexPlots[eiPlot] = edaData.emissionIndexPlots[eiPlot]
+                emissionIndexPlots[eiPlot] = imageComponent(edaData.emissionIndexPlots[eiPlot])
             }
             edaResult.emissionIndexPlots = emissionIndexPlots;
             setResultEDA(edaResult);
@@ -53,17 +52,49 @@ export function EDA() {
                 Start EDA
             </button>
 
-            <p>Correlation Matrix</p>
-            {resultEDA && resultEDA.correlationMatrixPlot ? resultEDA.correlationMatrixPlot : ''}
+            {resultEDA &&  resultEDA.dataDistributionPlots ? <p>Data Distribution</p> : ''}
+            <div class="one-row-plots data-distribution-plots">
+                {resultEDA &&  resultEDA.dataDistributionPlots ? Object.keys(resultEDA.dataDistributionPlots).map((plotName, index) => {
+                    return (
+                        <div class="one-row-plot dd-plot" data-plot-name={plotName}> 
+                            {resultEDA.dataDistributionPlots[plotName]}
+                        </div>
+                    );
+                }) : ""}
+            </div>
 
-            <p>Z-Score</p>
-            {resultEDA && resultEDA.zScorePlot ? resultEDA.zScorePlot : ''}
+            {resultEDA &&  resultEDA.emissionIndexPlots ? <p>Emission Index</p> : ''}
+            <div class="emission-index-plots">
+                {resultEDA &&  resultEDA.emissionIndexPlots ? Object.keys(resultEDA.emissionIndexPlots).map((plotName, index) => {
+                    return (
+                        <div class='ei-plot' data-plot-name={plotName}> 
+                            {resultEDA.emissionIndexPlots[plotName]}
+                        </div>
+                    );
+                }) : ''}
+            </div>
 
-            <p>Pairplot</p>
-            {resultEDA && resultEDA.pairplotPlot ? resultEDA.pairplotPlot : ''}
+            <div class="one-row-plots">
+                <div class="one-row-plot correlation-matrix-plot">
+                    {resultEDA && resultEDA.correlationMatrixPlot ? <p>Correlation Matrix</p> : ''}
+                    {resultEDA && resultEDA.correlationMatrixPlot ? resultEDA.correlationMatrixPlot : ''}
+                </div>
 
-            <p>Class Distribution</p>
-            {resultEDA && resultEDA.classDistribution ? resultEDA.classDistribution : ''}
+                <div class="one-row-plot z-score-plot">
+                    {resultEDA && resultEDA.zScorePlot ? <p>Z-Score</p> : ''}
+                    {resultEDA && resultEDA.zScorePlot ? resultEDA.zScorePlot : ''}
+                </div>
+            </div>
+
+            <div class="pairplot-plot">
+                {resultEDA && resultEDA.pairplotPlot ? <p>Pairplot</p> : ''}
+                {resultEDA && resultEDA.pairplotPlot ? resultEDA.pairplotPlot : ''}
+            </div>
+
+            <div class="class-distribution-plot">
+                {resultEDA && resultEDA.classDistribution ? <p>Class Distribution</p> : ''}
+                {resultEDA && resultEDA.classDistribution ? resultEDA.classDistribution : ''}
+            </div>
         </div>
         </div>
     );

@@ -15,8 +15,8 @@ export function FileUploader() {
 
     // when the Button component is clicked
     const handleClickAnalyse = (event) => {
-        var analyze = document.getElementById("analyze");
-        analyze.classList.remove("hidden");
+        document.querySelector(".analysis-button").classList.add("hidden");
+        document.getElementById("analyze").classList.remove("hidden");
     };
 
     const [fileName, setFileName] = useState("");
