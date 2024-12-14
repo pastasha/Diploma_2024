@@ -2,6 +2,7 @@ from configparser import ConfigParser
 from typing import Dict
 from uuid import uuid4
 import pandas as pd
+import shutil
 import psycopg2
 from typing import Dict, List
 import psycopg2.extras as psql_extras
@@ -20,6 +21,14 @@ def generate_user_id():
 # Allowed file extension check
 def allowed_file(filename):
     return '.' in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def remove_user_static_folder(user_id):
+    try:
+        folder_path = 'static/images/' + user_id + '/plots'
+        shutil.rmtree(folder_path)
+        print('Static folder of current user is removed. User ID: ' + user_id)
+    except:
+        print('Static folder not deleted. User ID: ' + user_id)
 
 def load_connection_info(
         ini_filename: str

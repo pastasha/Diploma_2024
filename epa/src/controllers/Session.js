@@ -1,6 +1,5 @@
 import axios from 'axios';
-import useState from "react";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 export function Session() {
 

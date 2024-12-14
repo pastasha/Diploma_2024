@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Route, NavLink, Routes, HashRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import Home from "./controllers/Home";
-import About from "./controllers/About";
+import { EDA } from "./controllers/EDA";
 import Contact  from "./controllers/Contact";
 import { Session } from "./controllers/Session";
 import { ReactComponent as Logo} from './icons/epa-logo.svg';  // eslint-disable-next-line 
@@ -46,8 +46,8 @@ render() {
         </section>
         <section>
           <div class="section-wrapper hidden" id="analyze">
-            <h1>Analyze</h1>
-            <About />
+            <h1>Exploratory Data Analysis</h1>
+            <EDA />
           </div>
         </section>
         <section>

@@ -15,15 +15,15 @@ export function FileUploader() {
 
     // when the Button component is clicked
     const handleClickAnalyse = (event) => {
-        var analyze = document.getElementById("analyze");
-        analyze.classList.remove("hidden");
+        document.querySelector(".analysis-button").classList.add("hidden");
+        document.getElementById("analyze").classList.remove("hidden");
     };
 
     const [fileName, setFileName] = useState("");
     const [fileSize, setFileSize] = useState("");
 
     // States to store parsed data, table Column name and the values
-    const [parsedData, setParsedData] = useState([]);
+    const [parsedData, setParsedData] = useState([]); // eslint-disable-line
     const [tableRows, setTableRows] = useState([]);
     const [values, setValues] = useState([]);
 
@@ -38,8 +38,8 @@ export function FileUploader() {
         
             let response = await fetch('/upload-data',
                 {
-                method: 'post',
-                body: data,
+                    method: 'post',
+                    body: data,
                 }
             );
             let res = await response.json();
@@ -56,7 +56,7 @@ export function FileUploader() {
                         const valuesArray = [];
                 
                         // Iterating data to get column name and their values
-                        results.data.map((d) => {
+                        results.data.map((d) => { // eslint-disable-line
                             rowsArray.push(Object.keys(d));
                             valuesArray.push(Object.values(d));
                         });
@@ -80,7 +80,7 @@ export function FileUploader() {
     return (
         <div>
             {/* Upload button */}
-            <button className="button-upload" onClick={handleClick}>
+            <button className="standard-upload" onClick={handleClick}>
                 Upload a file
             </button>
             <input
@@ -106,7 +106,7 @@ export function FileUploader() {
                         </tr>
                     </thead>
                     <tbody>
-                        {values.map((value, index) => {
+                        {values.map((value, index) => { // eslint-disable-line
                             if (index <= 4) {
                                 return (
                                     <tr key={index}> 
@@ -123,9 +123,9 @@ export function FileUploader() {
 
             {/* Analyse button */}
             <div class="analysis-button hidden">
-                <p>Your file was successfuly uploaded. Now you can procees with analysis.</p>
-                <button className="button-upload" onClick={handleClickAnalyse}>
-                    Start EDA
+                <p>Your file was successfuly uploaded. Please confirm data to proceed with analysis.</p>
+                <button className="standard-upload" onClick={handleClickAnalyse}>
+                    Confirm data
                 </button>
             </div>
         </div>
