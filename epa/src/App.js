@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Route, NavLink, Routes, HashRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import Home from "./controllers/Home";
 import { EDA } from "./controllers/EDA";
 import Contact  from "./controllers/Contact";
