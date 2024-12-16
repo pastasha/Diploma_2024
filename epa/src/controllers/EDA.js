@@ -41,14 +41,16 @@ export function EDA() {
             }
             edaResult.emissionIndexPlots = emissionIndexPlots;
             setResultEDA(edaResult);
+
+            document.querySelector(".start-eda-button").value = 'Restart EDA';
+            document.getElementById("predict").classList.remove("hidden");
         }
     }; 
 
     return (
         <div>
             <p>Exploratory Data Analysis, simply referred to as EDA, is the step where you understand the data in detail.</p>
-            <div class="start-eda-button">
-            <button className="standard-upload" onClick={handleClick}>
+            <button className="standard-upload start-eda-button" onClick={handleClick}>
                 Start EDA
             </button>
 
@@ -95,7 +97,6 @@ export function EDA() {
                 {resultEDA && resultEDA.classDistribution ? <p>Class Distribution</p> : ''}
                 {resultEDA && resultEDA.classDistribution ? resultEDA.classDistribution : ''}
             </div>
-        </div>
         </div>
     );
 };

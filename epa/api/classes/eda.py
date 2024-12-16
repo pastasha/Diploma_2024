@@ -50,6 +50,11 @@ class ExploratoryDataAnalysis:
             imgExists = True
         return imgExists
 
+    def prepareData(self, dataframe):
+        requiredColumns = ["Location", "Day", "Hour","AQI", "PM2.5", "PM10", "O3", "CO", "SO2", "NO2", "AQI_Class"]
+        processedDf = dataframe.loc[:, dataframe.columns.intersection(requiredColumns)]
+        return processedDf
+
     @staticmethod
     def generateDataDistributionPlot(self, dataframe, value, user_id, root_folder):
         try:
@@ -176,6 +181,7 @@ class ExploratoryDataAnalysis:
         # generate z-scope plot
         self.zScorePlot = self.generateZScorePlot(self, dataframe, user_id, root_folder)
         # generate pairplot plot
+        dataframe = self.prepareData(dataframe)
         self.pairplotPlot = self.generatePairplotPlot(self, dataframe, user_id, root_folder)
         # generate class distribution plot
         self.classDistribution = self.generateClassDistributionPlot(self, dataframe, user_id, root_folder)
